@@ -234,3 +234,7 @@ This project is licensed under the MIT License.
 ## Disclaimer
 
 This tool is for educational and research purposes. Please respect Roboflow's terms of service and rate limits. Always ensure you have permission to download and use datasets.
+
+
+# TODO:
+- Download dataset through downloading dataset first, if there's no then manually download by manual.

@@ -7,7 +7,7 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     networks:
@@ -34,8 +34,8 @@ services:
     networks:
       - scraper_network
     volumes:
-      - ./pgadmin_servers.json:/pgadmin4/servers.json
-      - ./pgadmin_pgpass:/pgpassfile
+      - ./db/pgadmin_servers.json:/pgadmin4/servers.json
+      - ./db/pgadmin_pgpass:/pgpassfile
     restart: unless-stopped
 
 volumes:
