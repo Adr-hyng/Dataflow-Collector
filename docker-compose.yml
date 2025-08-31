@@ -1,0 +1,47 @@
+services:
+  scraper:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./results:/home/appuser/results
+      - ./logs:/home/appuser/logs
+    environment:
+      - DATABASE_URL=postgresql://scraper:password@db:5432/roboflow_scraper
+      - ROBOFLOW_API_KEY=${ROBOFLOW_API_KEY:-}
+      - SEARCH_TERMS=${SEARCH_TERMS:-bottle,plastic bottle}
+      - MAX_PAGES=${MAX_PAGES:-3}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - scraper_network
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=roboflow_scraper
+      - POSTGRES_USER=scraper
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - scraper_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scraper -d roboflow_scraper"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  scraper_network:
+    driver: bridge
