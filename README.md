@@ -1,12 +1,12 @@
 # Roboflow Universe Dataset Scraper
 
-A robust, Docker-based web scraper that searches Roboflow Universe for computer vision datasets, extracts project information, and automatically downloads datasets using the Roboflow API.
+Hybrid setup: Docker for PostgreSQL + pgAdmin, and a local Python virtual environment for the Playwright scraper (see `test_scraper.py`).
 
 ## Features
 
 - 🔍 **Smart Search**: Search Roboflow Universe with custom keywords
 - 🏗️ **Robust Architecture**: Built with Playwright for reliable web scraping
-- 🐳 **Docker Ready**: Complete Docker setup with PostgreSQL database
+- 🐳 **Docker (DB Only)**: PostgreSQL + pgAdmin in containers
 - 📊 **Database Tracking**: Prevents duplicate downloads and tracks progress
 - 🔄 **API Integration**: Automatic dataset downloads via Roboflow API
 - 📦 **Multiple Formats**: Supports various dataset formats (YOLOv8, COCO, etc.)
@@ -14,19 +14,9 @@ A robust, Docker-based web scraper that searches Roboflow Universe for computer 
 
 ## Quick Start
 
-### Windows (Recommended)
-```cmd
-start.bat
-```
-
-### Linux/Mac
+### Start Database (Docker)
 ```bash
-# Create environment file
-cp env.example .env
-# Edit .env with your Roboflow API key
-
-# Start the scraper
-docker-compose up --build
+docker-compose up -d
 ```
 
 ### Manual Setup
@@ -71,20 +61,15 @@ MAX_PAGES=3
 
 ## Usage
 
-### With Docker (Recommended)
-
-```bash
-# Start the scraper with default settings
-docker-compose up --build
-
-# Run in background
-docker-compose up -d --build
-
-# View logs
-docker-compose logs -f scraper
-
-# Stop the scraper
-docker-compose down
+### Local Scraper (Python venv)
+```powershell
+python -m venv .venv
+ .\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m playwright install chromium
+$env:DATABASE_URL="postgresql://scraper:password@localhost:5432/roboflow_scraper"
+$env:ROBOFLOW_API_KEY="your_key_here"
+python test_scraper.py
 ```
 
 ### Local Development
@@ -128,12 +113,9 @@ python main.py
 ```
 roboflow-data-scraper/
 ├── docker-compose.yml      # Docker orchestration
-├── Dockerfile             # Container definition
-├── requirements.txt       # Python dependencies
+├── requirements.txt       # Python dependencies (local venv)
 ├── init.sql              # Database schema
-├── main.py               # Entry point
-├── scraper.py            # Web scraping logic
-├── roboflow_api.py       # API integration
+├── test_scraper.py       # Local scraper script (Playwright)
 ├── database.py           # Database models
 ├── env.example           # Environment template
 ├── results/              # Downloaded datasets

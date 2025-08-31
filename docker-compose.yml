@@ -1,23 +1,4 @@
 services:
-  scraper:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./results:/home/appuser/results
-      - ./logs:/home/appuser/logs
-    environment:
-      - DATABASE_URL=postgresql://scraper:password@db:5432/roboflow_scraper
-      - ROBOFLOW_API_KEY=${ROBOFLOW_API_KEY:-}
-      - SEARCH_TERMS=${SEARCH_TERMS:-bottle,plastic bottle}
-      - MAX_PAGES=${MAX_PAGES:-3}
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - scraper_network
-    restart: unless-stopped
-
   db:
     image: postgres:15-alpine
     environment:
@@ -37,6 +18,24 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=admin123
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - scraper_network
+    volumes:
+      - ./pgadmin_servers.json:/pgadmin4/servers.json
+      - ./pgadmin_pgpass:/pgpassfile
     restart: unless-stopped
 
 volumes:

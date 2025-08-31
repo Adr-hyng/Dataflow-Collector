@@ -1,0 +1,12 @@
+names:
+- plastic bottle
+nc: 1
+roboflow:
+  license: CC BY 4.0
+  project: plastic-bottle-biyfl
+  url: https://universe.roboflow.com/csproject-lqqy2/plastic-bottle-biyfl/dataset/1
+  version: 1
+  workspace: csproject-lqqy2
+test: ../test/images
+train: ../train/images
+val: ../valid/images
